@@ -69,6 +69,15 @@ class Dropdown(tk.Frame):
 class NumberInput(tk.Frame):
 
     def __init__(self, parent, default, maximum, minimum, text, width=30):
+        """
+        Widget designed for number input and verification. Ensures number are within a range.
+        :param parent: Parent Frame
+        :param default: Default Number
+        :param maximum: Maximum Number
+        :param minimum: Minimum Number
+        :param text: Label Text
+        :param width: Width of Entry Box
+        """
         tk.Frame.__init__(self, parent)
 
         # Initialize numbers for validation
