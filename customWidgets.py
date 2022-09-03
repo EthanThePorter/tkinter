@@ -18,7 +18,7 @@ class App(tk.Frame):
 
 
         # Code for Dropdown Menu
-        items = ["Alkane-Alcohol", "Alkane-Alcohol",
+        items = ["Alkane-Alcohol",
                  "Alcohol-Water", "Ketone-Alcohol",
                  "Alcohol-Alcohol", "Alcohol-Ester"]
         self.dropdown = Dropdown(self, items, 'System Type', width=25)
@@ -43,16 +43,21 @@ class App(tk.Frame):
         print(self.entry.get())
         print(self.dropdown.get())
         print(self.filename_input.get())
+        self.entry.set(213)
 
 
 class Dropdown(tk.Frame):
 
-    def __init__(self, parent, items, text, width=15, command=None):
+    def __init__(self, parent, items: list, text, width=15, command=None):
         tk.Frame.__init__(self, parent)
 
+        # Process list by having the first element repeat twice.
+        # This is because the first element gets deleted by OptionMenu
+        items.insert(0, items[0])
         # Initialize title
-        self.label = ttk.Label(self, text=text)
-        self.label.pack()
+        if text is not None:
+            self.label = ttk.Label(self, text=text)
+            self.label.pack()
         # Initialize OptionMenu
         self.value = tk.StringVar()
         self.value.set(items[0])
@@ -90,7 +95,7 @@ class Dropdown(tk.Frame):
 
 class NumberInput(tk.Frame):
 
-    def __init__(self, parent, default, maximum, minimum, text, width=30):
+    def __init__(self, parent, default, minimum, maximum, text, width=30):
         """
         Widget designed for number input and verification. Ensures number are within a range.
         :param parent: Parent Frame
@@ -185,8 +190,19 @@ class NumberInput(tk.Frame):
         self.number_validation()
         return float(self.entry_value.get())
 
-    def change_label(self, text):
+    def update_label(self, text):
         self.label.config(text=text)
+
+    def update_default(self, new_default):
+        self.default = new_default
+        self.number_validation()
+
+    def set(self, value):
+        self.entry_value.set(str(value))
+
+    def update_bounds(self, new_max, new_min):
+        self.maximum = new_max
+        self.minimum = new_min
 
 
 class FilenameInput(tk.Frame):

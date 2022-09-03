@@ -1,6 +1,6 @@
 
-x = 1
+x = [1, 2, 3]
 
-y = 1E4
+x.insert(0, x[0])
 
-print(x+y)
+print(x)
