@@ -410,11 +410,10 @@ namespace eval ttk::theme::azure-light {
         # Entry
         ttk::style element create Entry.field \
             image [list $I(box-basic) \
-                {focus hover} $I(box-accent) \
                 invalid $I(box-invalid) \
                 disabled $I(box-basic) \
                 focus $I(box-accent) \
-                hover $I(box-hover) \
+                !focus $I(box-basic) \
             ] -border 5 -padding {8} -sticky news
 
         # Combobox
