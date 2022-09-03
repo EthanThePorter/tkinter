@@ -245,7 +245,7 @@ namespace eval ttk::theme::azure-light {
         ttk::style element create OptionMenu.button \
             image [list $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
+                pressed $I(button-hover) \
                 active $I(button-hover) \
                 focus $I(button-hover)
             ] -border 4 -sticky ewns 
