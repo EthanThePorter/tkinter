@@ -21,7 +21,7 @@ class App(tk.Frame):
         self.dropdown.pack(pady=10, padx=10)
 
         # Code for Entry - call it NumberInput Class
-        self.entry = NumberInput(self, 5, 1, 1000, 'Vapour Pressure (mmHg)', displayBounds=False)
+        self.entry = NumberInput(self, 15, 10, 1000, 'Vapour Pressure (mmHg)', displayBounds=False)
         self.entry.pack()
 
         # Code for Filename
@@ -36,12 +36,20 @@ class App(tk.Frame):
         print(self.entry.get())
         print(self.dropdown.get())
         print(self.filename_input.get())
-        self.entry.update_bounds(10, 20)
+        self.entry.set(5)
 
 
 class Dropdown(tk.Frame):
 
     def __init__(self, parent, items: list, text, width=15, command=None):
+        """
+        Widget to simplify creating dropdown menus.
+        :param parent: Parent Frame.
+        :param items: List of items. Does not require the first element to be repeated twice like OptionMenu.
+        :param text: Text to display as label.
+        :param width: Width of combobox.
+        :param command: Command to execute when Dropmenu selection is changed.
+        """
         tk.Frame.__init__(self, parent)
 
         # Process list by having the first element repeat twice.
@@ -100,6 +108,7 @@ class NumberInput(tk.Frame):
         :param minimum: Minimum Number
         :param text: Label Text
         :param width: Width of Entry Box
+        :param displayBounds: Option to display bounds in label or not
         """
         tk.Frame.__init__(self, parent)
 
@@ -191,19 +200,29 @@ class NumberInput(tk.Frame):
             return False
 
     def get(self):
-        self.number_validation()
+        self.update_validate()
         return float(self.entry_value.get())
 
     def update_label(self, text):
         self.label.config(text=text)
 
     def update_default(self, new_default):
-        self.default = new_default
-        self.number_validation()
+        # Check if new default is outside of bounds
+        if new_default > self.maximum or new_default < self.minimum:
+            raise Exception(f'New Default is outside of currently set bounds\nNew Default:{new_default}\nBounds: {self.minimum}-{self.maximum}')
+        # If within bounds
+        else:
+            self.default = new_default
+            self.update_validate()
 
     def set(self, value):
-        self.entry_value.set(str(value))
-        self.number_validation()
+        # Check if new default is outside of bounds
+        if value > self.maximum or value < self.minimum:
+            raise Exception(f'New Value is outside of currently set bounds\nNew Value:{value}\nBounds: {self.minimum}-{self.maximum}')
+        else:
+            # If within bounds
+            self.entry_value.set(str(value))
+            self.update_validate()
 
     def update_bounds(self, new_min, new_max):
         self.maximum = new_max
@@ -218,8 +237,6 @@ class NumberInput(tk.Frame):
         """
         Handles cases for updated bounds
         """
-        # Sets focus
-        self.focus = False
         # Handles various cases for entry value
         try:
             value = float(self.entry_value.get())
@@ -244,8 +261,8 @@ class FilenameInput(tk.Frame):
         :param parent: Parent Frame
         :param text: Text to display as label
         :param default: Default filename
-        :param character_limit: (optional)
-        :param width: (optional) Width of Entry Box
+        :param character_limit: Character Limit
+        :param width: Width of Entry Box
         """
         tk.Frame.__init__(self, parent)
 
@@ -289,7 +306,7 @@ class FilenameInput(tk.Frame):
         self.fileEntry.state(['!focus'])
         self.error_text_var.set('')
 
-    def entry_FocusIn_handler(self, e=0):
+    def entry_FocusIn_handler(self, e):
         self.focus = True
 
     def validate(self, e):
