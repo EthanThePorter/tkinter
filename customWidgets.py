@@ -180,7 +180,10 @@ class NumberInput(tk.Frame):
         :return: True or False
         """
         try:
-            value = float(self.entry_value.get())
+            if self.entry_value.get() == '':
+                value = 0
+            else:
+                value = float(self.entry_value.get())
             if value > self.maximum or value < self.minimum:
                 self.entry.state(['invalid'])
                 self.error_text_var.set(f'Range: {self.minimum}-{self.maximum}')
@@ -196,7 +199,7 @@ class NumberInput(tk.Frame):
                 return True
         except:
             self.entry.state(['invalid'])
-            self.error_text_var.set(f'Range: {self.minimum}-{self.maximum}')
+            self.error_text_var.set(f'Invalid Number')
             return False
 
     def get(self):
@@ -204,7 +207,10 @@ class NumberInput(tk.Frame):
         return float(self.entry_value.get())
 
     def update_label(self, text):
-        self.label.config(text=text)
+        if self.displayBounds:
+            self.display_bounds_text.set(f'{text} ({self.minimum}-{self.maximum})')
+        else:
+            self.display_bounds_text.set(text)
 
     def update_default(self, new_default):
         # Check if new default is outside of bounds
