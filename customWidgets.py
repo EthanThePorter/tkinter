@@ -20,9 +20,16 @@ class App(tk.Frame):
         self.dropdown = Dropdown(self, items, 'System Type', width=25)
         self.dropdown.pack(pady=10, padx=10)
 
+
+
+        # Entry 2 for testing
+        self.entry_test = NumberInput(self, 15, 10, 1000, 'Vapour Pressure (mmHg)', displayBounds=True)
+        self.entry_test.pack()
+
         # Code for Entry - call it NumberInput Class
-        self.entry = NumberInput(self, 15, 10, 1000, 'Vapour Pressure (mmHg)', displayBounds=False)
+        self.entry = NumberInput(self, 15, 10, 1000, 'Vapour Pressure (mmHg)', displayBounds=False, command=self.entry_test.update_default)
         self.entry.pack()
+
 
         # Code for Filename
         self.filename_input = FilenameInput(self, 'Enter Filename', 'Data')
@@ -99,7 +106,7 @@ class Dropdown(tk.Frame):
 
 class NumberInput(tk.Frame):
 
-    def __init__(self, parent, default, minimum, maximum, text, width=30, displayBounds=False):
+    def __init__(self, parent, default, minimum, maximum, text, width=30, displayBounds=False, command=None):
         """
         Widget designed for number input and verification. Ensures number are within a range.
         :param parent: Parent Frame
@@ -109,9 +116,12 @@ class NumberInput(tk.Frame):
         :param text: Label Text
         :param width: Width of Entry Box
         :param displayBounds: Option to display bounds in label or not
+        :param command: Command to run with the entry value as the parameter. Only runs when value is valid.
         """
         tk.Frame.__init__(self, parent)
 
+        # Initialize command
+        self.command = command
         # Initialize numbers for validation
         self.maximum = maximum
         self.minimum = minimum
@@ -133,7 +143,9 @@ class NumberInput(tk.Frame):
         self.entry_value = tk.StringVar(self, str(default))
         self.entry = ttk.Entry(self, textvariable=self.entry_value, width=width)
         self.entry.pack()
-        self.entry.bind('<Key>', self.validate)
+        if self.command is not None:
+            self.entry.bind('<Key>', self.command_handler_delay)
+        self.entry.bind('<Key>', self.validate, add='+')
         self.entry.bind('<FocusOut>', self.entry_FocusOut_handler)
         self.entry.bind('<FocusIn>', self.entry_FocusIn_handler)
         # Initialize Error Label
@@ -142,6 +154,17 @@ class NumberInput(tk.Frame):
         self.error_label = ttk.Label(self, textvariable=self.error_text_var)
         self.error_label.config(foreground='red')
         self.error_label.pack()
+
+
+    def command_handler_delay(self, e):
+        """
+        Delays command_handler so most recent value is used
+        """
+        self.after(1, self.command_handler)
+
+    def command_handler(self):
+        if self.number_validation():
+            self.command(float(self.entry_value.get()))
 
     def entry_FocusOut_handler(self, e):
         """
@@ -172,7 +195,7 @@ class NumberInput(tk.Frame):
         """
         Creates 2ms delay before calling validate function. This ensures all text is properly read.
         """
-        return self.after(2, self.number_validation)
+        return self.after(1, self.number_validation)
 
     def number_validation(self):
         """
@@ -213,6 +236,8 @@ class NumberInput(tk.Frame):
             self.display_bounds_text.set(text)
 
     def update_default(self, new_default):
+        # Converts to float
+        new_default = float(new_default)
         # Check if new default is outside of bounds
         if new_default > self.maximum or new_default < self.minimum:
             raise Exception(f'New Default is outside of currently set bounds\nNew Default:{new_default}\nBounds: {self.minimum}-{self.maximum}')
