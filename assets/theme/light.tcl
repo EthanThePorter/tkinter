@@ -225,11 +225,11 @@ namespace eval ttk::theme::azure-light {
         ttk::style configure TMenubutton -padding {8 4 4 4}
 
         ttk::style element create Menubutton.button \
-            image [list $I(rect-basic) \
-                disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(button-hover) \
-                focus $I(button-hover)
+            image [list $I(box-basic) \
+                disabled $I(box-basic) \
+                pressed $I(box-basic) \
+                active $I(box-hover) \
+                focus $I(box-hover)
             ] -border 4 -sticky ewns 
 
         ttk::style element create Menubutton.indicator \
@@ -243,11 +243,11 @@ namespace eval ttk::theme::azure-light {
         ttk::style configure TOptionMenu -padding {8 4 4 4}
 
         ttk::style element create OptionMenu.button \
-            image [list $I(rect-basic) \
-                disabled $I(rect-basic) \
-                pressed $I(button-hover) \
-                active $I(button-hover) \
-                focus $I(button-hover)
+            image [list $I(box-basic) \
+                disabled $I(box-basic) \
+                pressed $I(box-hover) \
+                active $I(box-hover) \
+                focus $I(box-hover)
             ] -border 4 -sticky ewns 
 
         ttk::style element create OptionMenu.indicator \
@@ -411,7 +411,7 @@ namespace eval ttk::theme::azure-light {
         ttk::style element create Entry.field \
             image [list $I(box-basic) \
                 invalid $I(box-invalid) \
-                disabled $I(box-basic) \
+                disabled $I(box-disabled) \
                 focus $I(box-accent) \
                 !focus $I(box-basic) \
             ] -border 5 -padding {8} -sticky news

@@ -8,14 +8,10 @@ class App(tk.Frame):
 
         tk.Frame.__init__(self, master)
 
-        self.master = master
-
-
         # Code for standard button
         button1 = ttk.Button(self, text="Test", command=lambda: self.function(0))
         button1.bind('<Return>', self.function)
         button1.pack(pady=10)
-
 
         # Code for Dropdown Menu
         items = ["Alkane-Alcohol",
@@ -24,16 +20,13 @@ class App(tk.Frame):
         self.dropdown = Dropdown(self, items, 'System Type', width=25)
         self.dropdown.pack(pady=10, padx=10)
 
-
         # Code for Entry - call it NumberInput Class
-        self.entry = NumberInput(self, 5, 1000, 1, 'Vapour Pressure (mmHg) (1-10)')
+        self.entry = NumberInput(self, 5, 1, 1000, 'Vapour Pressure (mmHg)', displayBounds=False)
         self.entry.pack()
-
 
         # Code for Filename
         self.filename_input = FilenameInput(self, 'Enter Filename', 'Data')
         self.filename_input.pack()
-
 
     def function(self, e):
         """
@@ -43,7 +36,7 @@ class App(tk.Frame):
         print(self.entry.get())
         print(self.dropdown.get())
         print(self.filename_input.get())
-        self.entry.set(213)
+        self.entry.update_bounds(10, 20)
 
 
 class Dropdown(tk.Frame):
@@ -92,10 +85,13 @@ class Dropdown(tk.Frame):
     def get(self):
         return self.value.get()
 
+    def set(self, value):
+        self.value.set(value)
+
 
 class NumberInput(tk.Frame):
 
-    def __init__(self, parent, default, minimum, maximum, text, width=30):
+    def __init__(self, parent, default, minimum, maximum, text, width=30, displayBounds=False):
         """
         Widget designed for number input and verification. Ensures number are within a range.
         :param parent: Parent Frame
@@ -113,8 +109,16 @@ class NumberInput(tk.Frame):
         self.default = default
         # Initialize variable to track focus
         self.focus = False
+        # Initialize variable for displaying bounds and text
+        self.text = text
+        self.displayBounds = displayBounds
+        self.display_bounds_text = tk.StringVar()
+        if displayBounds:
+            self.display_bounds_text.set(f'{text} ({self.minimum}-{self.maximum})')
+        else:
+            self.display_bounds_text.set(text)
         # Initialize Label
-        self.label = ttk.Label(self, text=text)
+        self.label = ttk.Label(self, textvariable=self.display_bounds_text)
         self.label.pack()
         # Initialize Entry
         self.entry_value = tk.StringVar(self, str(default))
@@ -183,7 +187,7 @@ class NumberInput(tk.Frame):
                 return True
         except:
             self.entry.state(['invalid'])
-            self.error_text_var.set('Invalid Number')
+            self.error_text_var.set(f'Range: {self.minimum}-{self.maximum}')
             return False
 
     def get(self):
@@ -199,10 +203,37 @@ class NumberInput(tk.Frame):
 
     def set(self, value):
         self.entry_value.set(str(value))
+        self.number_validation()
 
-    def update_bounds(self, new_max, new_min):
+    def update_bounds(self, new_min, new_max):
         self.maximum = new_max
         self.minimum = new_min
+        # Validate Entry Box
+        self.update_validate()
+        # Update displayed bounds if enabled
+        if self.displayBounds:
+            self.display_bounds_text.set(f'{self.text} ({self.minimum}-{self.maximum})')
+
+    def update_validate(self):
+        """
+        Handles cases for updated bounds
+        """
+        # Sets focus
+        self.focus = False
+        # Handles various cases for entry value
+        try:
+            value = float(self.entry_value.get())
+            if value == '':
+                self.entry_value.set(str(self.default))
+            elif value < self.minimum:
+                self.entry_value.set(str(self.minimum))
+            elif value > self.maximum:
+                self.entry_value.set(str(self.maximum))
+        except:
+            self.entry_value.set(str(self.default))
+        # Adjust States
+        self.entry.state(['!invalid'])
+        self.error_text_var.set('')
 
 
 class FilenameInput(tk.Frame):
@@ -313,6 +344,12 @@ class FilenameInput(tk.Frame):
     def get(self):
         self.fileName_validation()
         return str(self.filename.get())
+
+    def disable(self):
+        self.fileEntry.config(state='disabled')
+
+    def enable(self):
+        self.fileEntry.config(state='active')
 
 
 # Create Root Frame

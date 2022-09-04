@@ -1,6 +1,7 @@
+def foo(number: int, text: str, items: list):
+    return str(number) + text
 
-x = [1, 2, 3]
 
-x.insert(0, x[0])
+x = foo(1, 'blah', [1, 2])
 
 print(x)
