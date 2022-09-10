@@ -103,6 +103,12 @@ class Dropdown(tk.Frame):
     def set(self, value):
         self.value.set(value)
 
+    def enable(self):
+        self.option_menu.config(state='normal')
+
+    def disable(self):
+        self.option_menu.config(state='disabled')
+
 
 class NumberInput(tk.Frame):
 
@@ -116,7 +122,6 @@ class NumberInput(tk.Frame):
         :param text: Label Text
         :param width: Width of Entry Box
         :param displayBounds: Option to display bounds in label or not
-        :param command: Command to run with the entry value as the parameter. Only runs when value is valid.
         """
         tk.Frame.__init__(self, parent)
 
@@ -143,8 +148,10 @@ class NumberInput(tk.Frame):
         self.entry_value = tk.StringVar(self, str(default))
         self.entry = ttk.Entry(self, textvariable=self.entry_value, width=width)
         self.entry.pack()
+        # Initializes binding for command to entry box, if one has been inputted to the class
         if self.command is not None:
             self.entry.bind('<Key>', self.command_handler_delay)
+        # Initializes other bindings to entry box
         self.entry.bind('<Key>', self.validate, add='+')
         self.entry.bind('<FocusOut>', self.entry_FocusOut_handler)
         self.entry.bind('<FocusIn>', self.entry_FocusIn_handler)
@@ -236,6 +243,9 @@ class NumberInput(tk.Frame):
             self.display_bounds_text.set(text)
 
     def update_default(self, new_default):
+        """
+        Updates default and sets values
+        """
         # Converts to float
         new_default = float(new_default)
         # Check if new default is outside of bounds
@@ -244,7 +254,7 @@ class NumberInput(tk.Frame):
         # If within bounds
         else:
             self.default = new_default
-            self.update_validate()
+            self.set(self.default)
 
     def set(self, value):
         # Check if new default is outside of bounds
@@ -282,6 +292,12 @@ class NumberInput(tk.Frame):
         # Adjust States
         self.entry.state(['!invalid'])
         self.error_text_var.set('')
+
+    def enable(self):
+        self.entry.config(state='normal')
+
+    def disable(self):
+        self.entry.config(state='disabled')
 
 
 class FilenameInput(tk.Frame):
