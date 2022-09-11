@@ -35,15 +35,20 @@ class App(tk.Frame):
         self.filename_input = FilenameInput(self, 'Enter Filename', 'Data')
         self.filename_input.pack()
 
+        self.value = ValueDisplay(self, 45, 'Value Display')
+        self.value.pack()
+
+        # Code for Entry - call it NumberInput Class
+        self.entry2 = NumberInput(self, 15, 10, 1000, 'Vapour Pressure (mmHg)', displayBounds=False, command=self.entry_test.update_default)
+        self.entry2.pack()
+        self.entry2.disable()
+
     def function(self, e):
         """
         Sample function for previewing button.
         :param e: Parameter for .bind() method's events.
         """
-        print(self.entry.get())
-        print(self.dropdown.get())
-        print(self.filename_input.get())
-        self.entry.set(5)
+        self.dropdown.update_options(['One Item', 'Two', 'Tjree'])
 
 
 class Dropdown(tk.Frame):
@@ -67,7 +72,7 @@ class Dropdown(tk.Frame):
             self.label = ttk.Label(self, text=text)
             self.label.pack()
         # Initialize OptionMenu
-        self.value = tk.StringVar()
+        self.value = tk.StringVar(self)
         self.value.set(items[0])
         self.options = items
         self.option_menu = ttk.OptionMenu(self,
@@ -90,12 +95,8 @@ class Dropdown(tk.Frame):
         self.label.config(text=text)
 
     def update_options(self, new_options):
-        self.options = new_options
-        self.option_menu['menu'].delete(0, 'end')
-        self.value.set('')
-        for option in new_options:
-            self.option_menu['menu'].add_command(label=option, command=tk._setit(self.value, option))
-        self.value.set(new_options[0])
+        self.option_menu.set_menu(new_options[0], *new_options)
+
 
     def get(self):
         return self.value.get()
@@ -303,6 +304,36 @@ class NumberInput(tk.Frame):
         self.entry.config(state='disabled')
 
 
+class ValueDisplay(tk.Frame):
+
+    def __init__(self, parent, value: str | float | int, text: str, width=30):
+        """
+
+        :param parent: Parent Frame
+        :param value: Value to display in box
+        :param text: Text for Label
+        :param width: Width of entry box
+        """
+        tk.Frame.__init__(self, parent)
+
+        # Initialize Label
+        self.text = tk.StringVar(self, text)
+        self.label = ttk.Label(self, textvariable=self.text)
+        self.label.pack()
+        # Initialize Entry
+        self.entry_value = tk.StringVar(self, str(value))
+        self.entry = ttk.Entry(self, textvariable=self.entry_value, width=width, foreground='black', background='black')
+        self.entry.config(state='disabled')
+        self.entry.pack()
+
+    def update_label(self, text):
+        self.text.set(text)
+
+    def set(self, value):
+        self.entry_value.set(str(value))
+
+
+
 class FilenameInput(tk.Frame):
 
     def __init__(self, parent, text, default, character_limit=25, width=30):
@@ -421,7 +452,7 @@ class FilenameInput(tk.Frame):
 
 # Create Root Frame
 root = tk.Tk()
-root.geometry('300x300+500+500')
+root.geometry('300x500+500+500')
 
 # Simply set the theme
 root.tk.call("source", "assets/azure.tcl")
