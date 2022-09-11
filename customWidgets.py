@@ -109,6 +109,9 @@ class Dropdown(tk.Frame):
     def disable(self):
         self.option_menu.config(state='disabled')
 
+    def background(self, color):
+        self.option_menu.config(bg=color)
+
 
 class NumberInput(tk.Frame):
 
